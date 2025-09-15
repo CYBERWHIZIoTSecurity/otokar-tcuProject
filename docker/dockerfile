@@ -1,0 +1,35 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+	build-essential \
+	git \
+	cmake \
+	ninja-build \
+	python3 \
+	python3-pip \
+	pkg-config \
+	xz-utils \
+	sudo \
+	locales \
+	findutils \
+	file \
+	perl \
+	chrpath \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+COPY fsl-imx-xwayland-glibc-x86_64-core-image-minimal-armv8a-imx8dxla1-iwg46m-2gb-toolchain-6.1-mickledore.sh /tmp/
+RUN chmod +x /tmp/*.sh
+
+RUN /tmp/fsl-imx-xwayland-glibc-x86_64-core-image-minimal-armv8a-imx8dxla1-iwg46m-2gb-toolchain-6.1-mickledore.sh -y \
+	&& rm -rf /tmp/*.sh
+
+RUN echo "source $(ls /opt/fsl-imx-xwayland/6.1-mickledore/environment-setup-*-poky-linux)" >> /etc/bash.bashrc
+
+
+ENV PATH="/opt/fsl-imx-xwayland/6.1-mickledore/sysroots/x86_64-pokysdk-linux/usr/bin:${PATH}"
+
+WORKDIR /tcu-dev
+CMD ["/bin/bash"]

@@ -1,0 +1,93 @@
+SRC_DIR := .
+INC_DIR := ./include
+LIB_DIR := ../Telematics_GW_library/lib
+
+# Source files
+SRCS := main.c can_bus.c
+TEST_SRCS := test_can_bus.c can_bus.c
+EXAMPLE_SRCS := can_example.c can_bus.c
+
+# Object and binary directories
+OBJ_DIR := ../build/obj
+BIN_DIR := ../build/bin
+
+# Objects
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+TEST_OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(TEST_SRCS))
+EXAMPLE_OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(EXAMPLE_SRCS))
+
+# Compiler and flags
+CC ?= aarch64-poky-linux-gcc
+CFLAGS  += -I$(INC_DIR) -Wall -O2 -g -std=c99
+LDFLAGS += -lpthread -lm -L$(LIB_DIR) -lTelematics_GW
+
+# Application names
+APP_NAME := can-bus-interface-app
+TEST_NAME := can-bus-interface-test
+EXAMPLE_NAME := can-bus-interface-example
+
+# Targets
+TARGET := $(BIN_DIR)/$(APP_NAME)
+TEST_TARGET := $(BIN_DIR)/$(TEST_NAME)
+EXAMPLE_TARGET := $(BIN_DIR)/$(EXAMPLE_NAME)
+
+# Default target
+all: $(TARGET) $(TEST_TARGET) $(EXAMPLE_TARGET)
+
+# Main application
+$(TARGET): $(OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+# Test suite
+$(TEST_TARGET): $(TEST_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(TEST_OBJS) -o $@ $(LDFLAGS)
+
+# Example program
+$(EXAMPLE_TARGET): $(EXAMPLE_OBJS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(EXAMPLE_OBJS) -o $@ $(LDFLAGS)
+
+# Object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Test target
+test: $(TEST_TARGET)
+	@echo "Running CAN Bus tests..."
+	@$(TEST_TARGET)
+
+# Example target
+example: $(EXAMPLE_TARGET)
+	@echo "Building CAN Bus example program..."
+
+# Clean target
+clean:
+	rm -rf ../build
+
+# Install target (for development)
+install: all
+	@echo "Installing CAN Bus library and examples..."
+	@mkdir -p $(BIN_DIR)
+	@cp $(TARGET) $(TEST_TARGET) $(EXAMPLE_TARGET) $(BIN_DIR)/
+	@echo "Installation complete. Binaries are in $(BIN_DIR)/"
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  all       - Build all targets (default)"
+	@echo "  test      - Build and run CAN Bus test suite"
+	@echo "  example   - Build CAN Bus example program"
+	@echo "  clean     - Remove build artifacts"
+	@echo "  install   - Install binaries to build directory"
+	@echo "  help      - Show this help message"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make              # Build everything"
+	@echo "  make test         # Run tests"
+	@echo "  make example      # Build example program"
+	@echo "  make clean        # Clean build"
+
+.PHONY: all test example clean install help
