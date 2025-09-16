@@ -3,7 +3,7 @@
 	author: metin.onal@cyberwhiz.co.uk
 */
 
-#include "include/libcommon/can.h"
+#include "include/cyber-canbus.h"
 
 static FILE *logfile = NULL;
 static struct timespec ts_start;
@@ -104,7 +104,7 @@ void canRxCallback(const struct canfd_frame *frame, int channel)
 
 int main(void)
 {
-	int ret = 0, s = 0;
+	int ret = 0;
 	struct canfd_frame frame;
 
 	printf("CAN interface init: %s, bitrate=%d\n", CAN_INTERFACE, CAN_BITRATE);
