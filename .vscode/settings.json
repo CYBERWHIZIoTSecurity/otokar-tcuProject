@@ -1,5 +1,13 @@
 {
 	"files.associations": {
-		"can.h": "c"
+		"can.h": "c",
+		"cyber-canbus.h": "c",
+		"cyber-gps.h": "c",
+		"stdint.h": "c",
+		"stdlib.h": "c",
+		"gps.h": "c",
+		"gsm.h": "c",
+		"socket.h": "c",
+		"time.h": "c"
 	}
 }
